@@ -33,8 +33,10 @@ namespace TemplateEngine.Docx.Example
 		            .AddRow(
 		                new FieldContent("Name", "Bob"),
 		                new FieldContent("Role", "Developer")),
+
                 // Add field inside table that not to propagate.
                 new FieldContent("Count", "2"),
+
 		        // Add list.	
 		        new ListContent("Team Members List")
                     .AddItem(
@@ -145,6 +147,46 @@ namespace TemplateEngine.Docx.Example
 		                new FieldContent("Role", "Developer"),
 		                new FieldContent("Age", "34"),
 		                new FieldContent("Projects", "Project two")),
+
+		        // Add table with nested table
+		        new TableContent("TeamMembersProjectsSummary")
+		            .AddRow(
+		                new FieldContent("TeamMemberName", "Eric"),
+						new TableContent("MemberProjects")
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "1"),
+							new FieldContent("MemberProjectName", "Project one"),
+							new FieldContent("MemberProjectRole", "Tester"))
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "2"),
+							new FieldContent("MemberProjectName", "Project two"),
+							new FieldContent("MemberProjectRole", "Developer"))
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "3"),
+							new FieldContent("MemberProjectName", "Project three"),
+							new FieldContent("MemberProjectRole", "Program Manager")))
+					.AddRow(
+						new FieldContent("TeamMemberName", "Bob"),
+						new TableContent("MemberProjects")
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "1"),
+							new FieldContent("MemberProjectName", "Project one"),
+							new FieldContent("MemberProjectRole", "Architect"))
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "2"),
+							new FieldContent("MemberProjectName", "Project five"),
+							new FieldContent("MemberProjectRole", "Developer")))
+					.AddRow(
+						new FieldContent("TeamMemberName", "Ann"),
+						new TableContent("MemberProjects")
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "1"),
+							new FieldContent("MemberProjectName", "Project two"),
+							new FieldContent("MemberProjectRole", "Developer"))
+						.AddRow(
+							new FieldContent("MemberProjectNumber", "2"),
+							new FieldContent("MemberProjectName", "Project seven"),
+							new FieldContent("MemberProjectRole", "Tester"))),
 
 		        // Add image
 		        new ImageContent("photo", File.ReadAllBytes("Tesla.jpg")),

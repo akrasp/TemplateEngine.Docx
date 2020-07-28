@@ -165,19 +165,36 @@ namespace TemplateEngine.Docx.Processors
 		{
 			var rowsWithContentControl = tableContentControl
 				.Descendants(W.tr)
-				.Where(tr =>
-					tr.Descendants(W.sdt)
-						.Any(sdt =>
-					        {
-					            var names = fieldNames as string[] ?? fieldNames.ToArray();
-					            return !names.Any() || names.Contains(
-					                       sdt.SdtTagName());
-					        }))
+				.Where(tr => IsNestedInAnotherControl(tableContentControl, tr) == false
+					&& tr.Descendants(W.sdt)
+					   .Any(sdt =>
+					   {
+						   var names = fieldNames as string[] ?? fieldNames.ToArray();
+						   return !names.Any() || names.Contains(sdt.SdtTagName());
+					   }))
 				.ToList();
 
 
 			return GetIntermediateAndMergedRows(rowsWithContentControl.First(), rowsWithContentControl.Last(),
 				tableContentControl);
+		}
+
+		// Check if row (tr) is own row of current table but not a row of some nested table.
+		// This prevents the bug with disapearing of parent table with all it's contents in
+		// case of having nested table.
+		private bool IsNestedInAnotherControl(XContainer parent, XElement descendant)
+		{
+			while (descendant != null)
+			{
+				if (descendant.Parent == parent)
+					return false;
+				else if (descendant.Parent.SdtTagName() != null)
+					return true;
+				else
+					descendant = descendant.Parent;
+			}
+
+			return false;
 		}
 
 		private List<XElement> GetIntermediateAndMergedRows(XElement firstRow, XElement lastRow, XContainer tableContentControl)
