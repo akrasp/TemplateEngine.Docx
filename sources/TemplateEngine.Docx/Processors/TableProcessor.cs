@@ -102,7 +102,7 @@ namespace TemplateEngine.Docx.Processors
 		            .Where(fieldNames.Contains)
 		            .ToList();
 
-		        //If there are not content controls with the one of specified field name we need to add the warning
+		        // If there are not content controls with the one of specified field name we need to add the warning
 		        if (contentControlTagNames.Intersect(fieldNames).Count() != fieldNames.Count())
 		        {
 		            var invalidFileNames = fieldNames
@@ -115,12 +115,19 @@ namespace TemplateEngine.Docx.Processors
 		                        invalidFileNames.Count > 1 ? "controls" : "control",
 		                        string.Join(", ", invalidFileNames.Select(fn => string.Format("'{0}'", fn))))));
 
-		        }
+				}
 
-		        // Create a list of new rows to be inserted into the document.  Because this
-		        // is a document centric transform, this is written in a non-functional
-		        // style, using tree modification.
-		        var newRows = new List<List<XElement>>();
+				// If table have no content controls at all than leave processing now
+				if (prototypeRows.Any() == false)
+				{
+					processResult.AddItemToHandled(table);
+					return processResult;
+				}
+
+				// Create a list of new rows to be inserted into the document. Because this
+				// is a document centric transform, this is written in a non-functional
+				// style, using tree modification.
+				var newRows = new List<List<XElement>>();
 		        foreach (var row in table.Rows)
 		        {
 		            // Clone the prototypeRows into newRowsEntry.
@@ -174,6 +181,8 @@ namespace TemplateEngine.Docx.Processors
 					   }))
 				.ToList();
 
+			if (rowsWithContentControl.Any() == false)
+				return new List<XElement>();
 
 			return GetIntermediateAndMergedRows(rowsWithContentControl.First(), rowsWithContentControl.Last(),
 				tableContentControl);
@@ -188,7 +197,7 @@ namespace TemplateEngine.Docx.Processors
 			{
 				if (descendant.Parent == parent)
 					return false;
-				else if (descendant.Parent.SdtTagName() != null)
+				else if (descendant.Parent?.SdtTagName() != null)
 					return true;
 				else
 					descendant = descendant.Parent;
